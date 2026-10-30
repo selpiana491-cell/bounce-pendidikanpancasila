@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5b55d9">
+<title>BounceQuiz AI — Lambang Pancasila</title>
+<style>
+:root{--ink:#202448;--muted:#69708d;--purple:#625be7;--pink:#ff6fae;--yellow:#ffd45c;--mint:#65d9b2;--paper:#fff;--bg:#f4f5ff;--line:#e7e8f5;--shadow:0 16px 40px rgba(47,48,105,.12)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 10% 5%,#fff2f8 0,transparent 27%),radial-gradient(circle at 95% 20%,#e7fbf5 0,transparent 25%),var(--bg);font-family:ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--ink);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+.app{max-width:1120px;margin:auto;padding:22px 18px 42px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:52px;height:52px;border-radius:17px;background:linear-gradient(135deg,var(--purple),#9b75f5);display:grid;place-items:center;color:white;font-size:27px;box-shadow:0 8px 18px #625be744}
+h1{font-size:clamp(24px,4vw,34px);margin:0;letter-spacing:-1px}
+.tagline{color:var(--muted);font-size:13px;margin-top:3px}
+.pill{background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:999px;font-size:12px;font-weight:800;color:var(--purple)}
+.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.info{background:#fff;border:1px solid var(--line);border-radius:17px;padding:13px 16px;box-shadow:0 5px 16px #37376b08}
+.info small{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.info strong{font-size:15px}
+.stats{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin-bottom:14px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px 16px}
+.stat small{color:var(--muted);font-weight:700;font-size:12px}
+.stat strong{display:block;font-size:23px;margin-top:3px}
+.progress{height:9px;background:#eeeefa;border-radius:20px;overflow:hidden;margin-top:9px}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:20px;transition:width .3s}
+.main-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.8fr);gap:15px;align-items:start}
+.panel{background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.panel-head{padding:17px 19px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.panel-head h2{font-size:17px;margin:0}
+.panel-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
+.playfield{height:440px;position:relative;overflow:hidden;background:linear-gradient(145deg,#f1f0ff,#eefbfa);background-image:radial-gradient(#c9c8f0 1px,transparent 1px);background-size:19px 19px}
+.ball{position:absolute;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:19px;font-weight:900;border:3px solid #ffffffb8;box-shadow:0 8px 15px #25264b2b,inset 0 -6px 0 #00000012;user-select:none;transition:transform .15s,filter .15s}
+.ball:hover{transform:scale(1.12);filter:brightness(1.05)}
+.ball.done{background:#aab1c5!important;opacity:.72}
+.ball.done:after{content:"✓";position:absolute;right:-4px;top:-7px;background:#28b985;color:white;border:2px solid white;border-radius:50%;width:22px;height:22px;font-size:13px;display:grid;place-items:center}
+.ball:focus-visible{outline:4px solid #27245b;outline-offset:3px}
+.legend{padding:12px 17px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.side{display:flex;flex-direction:column;gap:13px}
+.tip{padding:16px 17px;background:#fff8df;border:1px solid #ffedb1;border-radius:18px;font-size:13px;line-height:1.5}
+.tip b{display:block;margin-bottom:4px}
+.question{padding:18px}
+.empty{text-align:center;padding:42px 18px;color:var(--muted)}
+.empty .emoji{font-size:38px;margin-bottom:10px}
+.qmeta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font-size:11px;font-weight:800;padding:6px 9px;border-radius:99px;background:#f0efff;color:#5c55cf}
+.chip.alt{background:#e8faf4;color:#168b69}
+.qnumber{font-size:12px;color:var(--muted);font-weight:800}
+.question h3{font-size:19px;line-height:1.45;margin:8px 0 16px}
+.options{display:grid;gap:9px}
+.option{display:flex;gap:10px;align-items:center;text-align:left;padding:12px 13px;background:#fafaff;border:1.5px solid #e8e8f5;border-radius:13px;color:var(--ink);font-weight:700;line-height:1.35;transition:.15s}
+.option:hover{border-color:#aaa5f7;background:#f6f5ff}
+.option.selected{border-color:var(--purple);background:#efeeff;box-shadow:0 0 0 2px #625be71a}
+.letter{flex:0 0 27px;height:27px;border-radius:9px;background:#e9e8ff;color:#5d56d7;display:grid;place-items:center;font-size:12px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.primary,.secondary,.success,.danger{padding:11px 16px;border-radius:12px;font-weight:900;font-size:13px}
+.primary{background:var(--purple);color:#fff;box-shadow:0 7px 15px #625be733}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.secondary{background:#f0efff;color:#514ac7}
+.success{background:#e4f8f0;color:#16865f}
+.danger{background:#fff0f3;color:#c34467}
+.feedback{margin-top:14px;border-radius:13px;padding:13px 14px;font-size:13px;line-height:1.5}
+.feedback.good{background:#e8faf2;border:1px solid #bdebd8;color:#176b51}
+.feedback.bad{background:#fff0f2;border:1px solid #ffd1d9;color:#9c3550}
+.feedback.neutral{background:#f2f1ff;border:1px solid #dddbff;color:#514ac7}
+textarea{width:100%;min-height:82px;border:1.5px solid var(--line);border-radius:12px;padding:12px;resize:vertical;outline:none;color:var(--ink)}
+textarea:focus{border-color:var(--purple)}
+.indicator{background:#f7f7ff;border-radius:12px;padding:12px;font-size:12px;line-height:1.5;color:#535a78;margin:12px 0}
+.teacher-note{font-size:11px;color:var(--muted);margin-top:8px}
+.hidden{display:none!important}
+.overlay{position:fixed;inset:0;background:#1717359c;display:grid;place-items:center;padding:18px;z-index:20}
+.modal{background:white;border-radius:24px;padding:25px;width:min(460px,100%);box-shadow:0 25px 80px #0004}
+.modal h2{margin:0 0 8px;font-size:23px}
+.modal p{color:var(--muted);font-size:13px;line-height:1.5}
+.mode-choice{display:grid;gap:10px;margin:18px 0}
+.mode-btn{padding:14px;border:1.5px solid var(--line);border-radius:14px;background:#fafaff;text-align:left}
+.mode-btn strong{display:block;margin-bottom:4px}
+.mode-btn span{font-size:12px;color:var(--muted)}
+.mode-btn.active{border-color:var(--purple);background:#f0efff}
+.result{text-align:center;max-width:600px;margin:25px auto;padding:30px}
+.result .trophy{font-size:58px}
+.result h2{font-size:30px;margin:8px 0}
+.score-big{font-size:52px;font-weight:1000;color:var(--purple);margin:8px}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}
+.result-cell{background:#f7f7ff;border-radius:14px;padding:13px}
+.result-cell small{display:block;color:var(--muted);font-size:11px}
+.result-cell strong{display:block;font-size:21px;margin-top:4px}
+.review{margin-top:18px;text-align:left;border-top:1px solid var(--line);padding-top:14px}
+.review-item{padding:10px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.5}
+footer{text-align:center;color:#9297ad;font-size:11px;margin-top:22px}
+@media(max-width:780px){.main-grid{grid-template-columns:1fr}.playfield{height:390px}.stats{grid-template-columns:1fr 1fr}.stat:first-child{grid-column:1/-1}}
+@media(max-width:480px){.app{padding:15px 11px 30px}.info-grid{gap:7px}.info{padding:11px}.info strong{font-size:12px}.info small{font-size:9px}.stats{gap:7px}.stat{padding:11px}.stat strong{font-size:19px}.playfield{height:350px}.ball{width:53px;height:53px;font-size:16px}.result-grid{gap:6px}.result-cell{padding:10px 5px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="logo">✦</div><div><h1>BounceQuiz AI</h1><div class="tagline">Belajar sambil bermain, hebat setiap hari!</div></div></div>
+ <div class="pill">KELAS 2 SD</div>
+</header>
+<div class="info-grid">
+ <div class="info"><small>Mata Pelajaran</small><strong>Pendidikan Pancasila</strong></div>
+ <div class="info"><small>Materi</small><strong>Lambang Pancasila</strong></div>
+ <div class="info"><small>Mode Asesmen</small><strong id="modeLabel">Formatif</strong></div>
+</div>
+<div class="stats" id="stats">
+ <div class="stat"><small>Progress · Terjawab <b id="progressText">0 / 11</b></small><div class="progress"><span id="progressBar"></span></div></div>
+ <div class="stat"><small>Skor Benar</small><strong id="correctCount">0</strong></div>
+ <div class="stat"><small>Total Poin</small><strong id="totalPoints">0</strong></div>
+</div>
+<div class="main-grid" id="gameArea">
+ <section class="panel">
+  <div class="panel-head"><div><h2>🎈 Arena Bola Pancasila</h2><p>Klik bola bernomor untuk membuka soal.</p></div><span class="chip">11 BOLA</span></div>
+  <div class="playfield" id="playfield" aria-label="Area permainan bola bernomor"></div>
+  <div class="legend"><span><i class="dot" style="background:#625be7"></i>Belum dijawab</span><span><i class="dot" style="background:#aab1c5"></i>Selesai</span><span>✦ Bola bergerak dan memantul</span></div>
+ </section>
+ <aside class="side">
+  <div class="panel">
+   <div class="panel-head"><div><h2>📝 Ruang Soal</h2><p id="questionHint">Pilih satu bola untuk memulai.</p></div></div>
+   <div class="question" id="questionPanel"><div class="empty"><div class="emoji">👆</div><b>Siap bermain?</b><br><span>Klik salah satu bola di arena.</span></div></div>
+  </div>
+  <div class="tip"><b>💡 Petunjuk bermain</b>Setiap bola menyimpan satu soal. Jawab soal pilihan ganda atau minta siswa menjawab secara lisan. Guru memberi nilai untuk jawaban lisan.</div>
+ </aside>
+</div>
+<section class="panel result hidden" id="resultPanel">
+ <div class="trophy">🏆</div><h2>BounceQuiz Selesai!</h2><p>Hebat! Semua bola sudah berhasil diselesaikan.</p>
+ <div class="score-big" id="finalScore">0</div><b>Nilai Akhir</b>
+ <div class="result-grid">
+  <div class="result-cell"><small>Jumlah Soal</small><strong>11</strong></div>
+  <div class="result-cell"><small>Jawaban Benar</small><strong id="finalCorrect">0</strong></div>
+  <div class="result-cell"><small>Jawaban Salah</small><strong id="finalWrong">0</strong></div>
+ </div>
+ <p id="finalMessage"></p>
+ <button class="primary" onclick="restartGame()">↻ Main Lagi</button>
+ <div class="review"><h3>Rekap Penilaian</h3><div id="reviewList"></div></div>
+</section>
+<footer>BounceQuiz AI · Media pembelajaran Pendidikan Pancasila</footer>
+</div>
+
+<div class="overlay" id="startOverlay">
+ <div class="modal">
+  <h2>🌟 Selamat Datang!</h2>
+  <p>Pilih mode asesmen sebelum memulai permainan Lambang Pancasila.</p>
+  <div class="mode-choice">
+   <button class="mode-btn active" data-mode="formatif" onclick="chooseMode('formatif',this)"><strong>📘 Asesmen Formatif</strong><span>Feedback dan pembahasan tampil setelah setiap soal.</span></button>
+   <button class="mode-btn" data-mode="sumatif" onclick="chooseMode('sumatif',this)"><strong>📊 Asesmen Sumatif</strong><span>Rekap hasil ditampilkan setelah semua soal selesai.</span></button>
+  </div>
+  <button class="primary" style="width:100%" onclick="startGame()">Mulai Bermain 🚀</button>
+ </div>
+</div>
+
+<script>
+const questions = [
+ {id:1,type:"mc",level:"Mudah",q:"Apa lambang sila pertama Pancasila?",opts:["Bintang","Rantai","Pohon beringin","Kepala banteng"],a:0,explain:"Sila pertama berbunyi Ketuhanan Yang Maha Esa dan dilambangkan dengan bintang."},
+ {id:2,type:"mc",level:"Mudah",q:"Rantai merupakan lambang sila ke berapa?",opts:["Sila pertama","Sila kedua","Sila ketiga","Sila kelima"],a:1,explain:"Rantai adalah lambang sila kedua, yaitu Kemanusiaan yang Adil dan Beradab."},
+ {id:3,type:"mc",level:"Mudah",q:"Apa lambang sila ketiga Pancasila?",opts:["Padi dan kapas","Bintang","Pohon beringin","Rantai"],a:2,explain:"Sila ketiga, Persatuan Indonesia, dilambangkan dengan pohon beringin."},
+ {id:4,type:"mc",level:"Mudah",q:"Kepala banteng adalah lambang sila ...",opts:["Pertama","Kedua","Ketiga","Keempat"],a:3,explain:"Kepala banteng melambangkan sila keempat, tentang kerakyatan dan musyawarah."},
+ {id:5,type:"mc",level:"Sedang",q:"Pasangan sila dan lambang yang tepat adalah ...",opts:["Sila pertama – rantai","Sila kedua – rantai","Sila ketiga – bintang","Sila kelima – kepala banteng"],a:1,explain:"Sila kedua dipasangkan dengan rantai yang melambangkan hubungan antarmanusia."},
+ {id:6,type:"mc",level:"Sedang",q:"Padi dan kapas merupakan lambang sila ke ...",opts:["Satu","Dua","Empat","Lima"],a:3,explain:"Padi dan kapas adalah lambang sila kelima, Keadilan Sosial bagi Seluruh Rakyat Indonesia."},
+ {id:7,type:"mc",level:"Sedang",q:"Sila yang dilambangkan pohon beringin mengajarkan kita untuk ...",opts:["Bersatu","Bertengkar","Mementingkan diri sendiri","Tidak mau berteman"],a:0,explain:"Pohon beringin melambangkan persatuan dan tempat berteduh bersama."},
+ {id:8,type:"mc",level:"Menantang",q:"Urutan lambang sila pertama sampai ketiga yang benar adalah ...",opts:["Rantai, bintang, pohon beringin","Bintang, rantai, pohon beringin","Bintang, kepala banteng, rantai","Padi kapas, rantai, bintang"],a:1,explain:"Urutan lambangnya adalah bintang (sila 1), rantai (sila 2), dan pohon beringin (sila 3)."},
+ {id:9,type:"oral",level:"Sedang",q:"Sebutkan bunyi sila pertama Pancasila dan jelaskan lambangnya!",indicator:"Jawaban diharapkan: “Ketuhanan Yang Maha Esa” dan lambangnya adalah bintang.",explain:"Sila pertama berbunyi Ketuhanan Yang Maha Esa. Lambangnya adalah bintang."},
+ {id:10,type:"oral",level:"Sedang",q:"Sebutkan lambang sila kedua dan sila ketiga secara berurutan!",indicator:"Jawaban diharapkan: rantai untuk sila kedua dan pohon beringin untuk sila ketiga.",explain:"Sila kedua dilambangkan rantai, sedangkan sila ketiga dilambangkan pohon beringin."},
+ {id:11,type:"oral",level:"Menantang",q:"Jika kamu melihat gambar padi dan kapas pada perisai Garuda Pancasila, sila ke berapa itu? Sebutkan bunyi silanya!",indicator:"Jawaban diharapkan: sila kelima, “Keadilan Sosial bagi Seluruh Rakyat Indonesia”.",explain:"Padi dan kapas adalah lambang sila kelima, yaitu Keadilan Sosial bagi Seluruh Rakyat Indonesia."}
+];
+const colors=["#625be7","#f06ca7","#21b99b","#f2a83b","#4e9ce8","#ed7866","#8c68d9","#24a9b6","#e88a3d","#5eaf76","#c56eb9"];
+let mode="formatif",selected=null,done=new Set(),scores={},answers={},balls=[],animFrame=null,started=false;
+const field=document.getElementById("playfield");
+function chooseMode(m,el){mode=m;document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));el.classList.add("active");}
+function startGame(){document.getElementById("startOverlay").classList.add("hidden");document.getElementById("modeLabel").textContent=mode==="formatif"?"Formatif":"Sumatif";started=true;initBalls();updateStats();}
+function initBalls(){
+ field.innerHTML="";balls=[];
+ const w=field.clientWidth,h=field.clientHeight,size=58;
+ questions.forEach((q,i)=>{
+  const el=document.createElement("button");el.className="ball";el.textContent=q.id;el.setAttribute("aria-label","Bola nomor "+q.id);el.style.background=colors[i];
+  const x=15+Math.random()*Math.max(1,w-size-30),y=15+Math.random()*Math.max(1,h-size-30);
+  const b={el,x,y,vx:(Math.random()>.5?1:-1)*(1.05+Math.random()),vy:(Math.random()>.5?1:-1)*(1.0+Math.random())};balls.push(b);field.appendChild(el);el.addEventListener("click",()=>openQuestion(q.id));placeBall(b);
+ });if(animFrame)cancelAnimationFrame(animFrame);animate();
+}
+function placeBall(b){b.el.style.transform=`translate(${b.x}px,${b.y}px)`;}
+function animate(){const w=field.clientWidth,h=field.clientHeight,s=58;balls.forEach(b=>{if(done.has(Number(b.el.textContent)))return;b.x+=b.vx;b.y+=b.vy;if(b.x<0||b.x>w-s)b.vx*=-1;if(b.y<0||b.y>h-s)b.vy*=-1;b.x=Math.max(0,Math.min(w-s,b.x));b.y=Math.max(0,Math.min(h-s,b.y));placeBall(b)});animFrame=requestAnimationFrame(animate);}
+function openQuestion(id){
+ if(done.has(id))return;selected=id;const q=questions[id-1],panel=document.getElementById("questionPanel");
+ document.getElementById("questionHint").textContent="Soal nomor "+id+" dari 11";
+ let content=`<div class="qmeta"><span class="chip">${q.type==="mc"?"Pilihan Ganda":"Jawaban Lisan"}</span><span class="chip alt">${q.level}</span></div><div class="qnumber">BOLA NOMOR ${id}</div><h3>${q.q}</h3>`;
+ if(q.type==="mc"){content+=`<div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="selectOption(${i},this)"><span class="letter">${"ABCD"[i]}</span><span>${o}</span></button>`).join("")}</div><div class="actions"><button class="primary" id="submitAnswer" disabled onclick="submitMC()">Periksa Jawaban</button></div>`;}
+ else{content+=`<div class="indicator"><b>Indikator jawaban guru:</b><br>${q.indicator}</div><label for="oralAnswer" style="font-size:12px;font-weight:800;display:block;margin:12px 0 7px">Catatan jawaban siswa (opsional)</label><textarea id="oralAnswer" placeholder="Tuliskan ringkasan jawaban lisan siswa..."></textarea><div class="teacher-note">Guru menyimak jawaban siswa, lalu memilih penilaian sesuai rubrik.</div><div class="actions"><button class="success" onclick="scoreOral(100)">Benar · 100</button><button class="secondary" onclick="scoreOral(50)">Sebagian benar · 50</button><button class="danger" onclick="scoreOral(0)">Salah · 0</button></div>`;}
+ panel.innerHTML=content;
+}
+let selectedOption=null;
+function selectOption(i,el){selectedOption=i;document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));el.classList.add("selected");document.getElementById("submitAnswer").disabled=false;}
+function submitMC(){if(selected===null||selectedOption===null)return;const q=questions[selected-1],correct=selectedOption===q.a;const points=correct?100:0;const userAnswer=q.opts[selectedOption];finishQuestion(q,points,correct,userAnswer);selectedOption=null;}
+function scoreOral(points){if(selected===null)return;const q=questions[selected-1],note=document.getElementById("oralAnswer")?.value.trim()||"Jawaban lisan dinilai langsung oleh guru.";finishQuestion(q,points,points===100,note);}
+function finishQuestion(q,points,correct,userAnswer){
+ if(done.has(q.id))return;done.add(q.id);scores[q.id]=points;answers[q.id]={correct,userAnswer};
+ const ball=balls[q.id-1];ball.el.classList.add("done");ball.el.disabled=true;
+ updateStats();
+ const feedback=mode==="formatif"?`<div class="feedback ${correct?"good":points===50?"neutral":"bad"}"><b>${correct?"Hebat! Jawabanmu benar!":points===50?"Bagus, kamu sudah berusaha!":"Tidak apa-apa, ayo belajar lagi!"}</b><br>${q.type==="mc"?"Jawaban kamu: "+userAnswer+"<br>":""}<b>Pembahasan:</b> ${q.explain}</div>`:"<div class='feedback neutral'><b>Jawaban tersimpan.</b><br>Pembahasan akan ditampilkan pada rekap akhir asesmen sumatif.</div>";
+ const panel=document.getElementById("questionPanel");
+ panel.innerHTML=`<div class="qmeta"><span class="chip">${q.type==="mc"?"Pilihan Ganda":"Jawaban Lisan"}</span><span class="chip alt">Selesai</span></div><h3>Soal nomor ${q.id} telah dinilai.</h3><div class="feedback ${correct?"good":points===50?"neutral":"bad"}"><b>${points===100?"✓ Benar":points===50?"◐ Sebagian benar":"✕ Belum tepat"}</b><br>Skor: <b>${points} poin</b></div>${feedback}<div class="actions"><button class="primary" onclick="continueGame()">Lanjutkan Permainan</button></div>`;
+ document.getElementById("questionHint").textContent="Soal selesai dinilai.";
+ if(done.size===questions.length){setTimeout(showResults,mode==="formatif"?650:250);}
+}
+function continueGame(){selected=null;document.getElementById("questionHint").textContent="Pilih bola yang belum selesai.";document.getElementById("questionPanel").innerHTML='<div class="empty"><div class="emoji">🎈</div><b>Bagus! Lanjutkan!</b><br><span>Pilih bola lain yang masih berwarna.</span></div>';}
+function updateStats(){const n=done.size,correct=Object.values(answers).filter(a=>a.correct).length,points=Object.values(scores).reduce((a,b)=>a+b,0);document.getElementById("progressText").textContent=n+" / 11";document.getElementById("progressBar").style.width=(n/11*100)+"%";document.getElementById("correctCount").textContent=correct;document.getElementById("totalPoints").textContent=points;}
+function showResults(){
+ if(animFrame)cancelAnimationFrame(animFrame);document.getElementById("gameArea").classList.add("hidden");document.getElementById("stats").classList.add("hidden");const panel=document.getElementById("resultPanel");panel.classList.remove("hidden");
+ const points=Object.values(scores).reduce((a,b)=>a+b,0),score=Math.round(points/1100*100),correct=Object.values(answers).filter(a=>a.correct).length,wrong=11-correct;
+ document.getElementById("finalScore").textContent=score;document.getElementById("finalCorrect").textContent=correct;document.getElementById("finalWrong").textContent=wrong;
+ document.getElementById("finalMessage").textContent=score>=85?"Luar biasa! Kamu hebat mengenal lambang Pancasila!":score>=65?"Bagus! Terus berlatih agar semakin hafal!":"Tetap semangat! Ayo pelajari kembali lima lambang Pancasila.";
+ document.getElementById("reviewList").innerHTML=questions.map(q=>{const a=answers[q.id];return `<div class="review-item"><b>${q.id}. ${q.q}</b><br>Nilai: ${scores[q.id]} poin · ${a.correct?"Benar":scores[q.id]===50?"Sebagian benar":"Belum tepat"}<br><span style="color:#68708c">${q.explain}</span></div>`}).join("");
+}
+function restartGame(){done=new Set();scores={};answers={};selected=null;selectedOption=null;document.getElementById("resultPanel").classList.add("hidden");document.getElementById("gameArea").classList.remove("hidden");document.getElementById("stats").classList.remove("hidden");document.getElementById("questionHint").textContent="Pilih satu bola untuk memulai.";document.getElementById("questionPanel").innerHTML='<div class="empty"><div class="emoji">👆</div><b>Siap bermain?</b><br><span>Klik salah satu bola di arena.</span></div>';initBalls();updateStats();}
+window.addEventListener("resize",()=>{if(started&&!document.getElementById("gameArea").classList.contains("hidden")){const w=field.clientWidth,h=field.clientHeight;balls.forEach(b=>{b.x=Math.min(b.x,w-58);b.y=Math.min(b.y,h-58);});}});
+</script>
+</body>
+</html>
